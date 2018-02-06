@@ -35,5 +35,6 @@ func main() {
 	}
 	http.HandleFunc("/config", configHandler)
 	http.HandleFunc("/store", storeHandler)
+	http.HandleFunc("/ls", lsHandler)
 	log.Fatal(http.ListenAndServe(*addr, nil))
 }
