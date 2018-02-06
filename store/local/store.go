@@ -8,12 +8,10 @@ import (
 	"path"
 )
 
-type Store struct {
-	Home string
-}
+var Path string
 
-func (s Store) Store(id int64, p []byte) error {
-	name := path.Join(s.Home, "events", fmt.Sprintf("%v", id))
+func Store(id int64, p []byte) error {
+	name := path.Join(Path, "events", fmt.Sprintf("%v", id))
 	f, err := os.Create(name)
 	if err != nil {
 		return fmt.Errorf("store/local: create file failed: %v", err)

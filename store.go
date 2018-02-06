@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"sync/atomic"
+
+	"github.com/martindrlik/events/store/local"
 )
 
 var globalID int64
@@ -33,7 +35,7 @@ func storeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	newID := atomic.AddInt64(&globalID, 1)
-	err = locals.Store(newID, p)
+	err = local.Store(newID, p)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "local store failed", http.StatusInternalServerError)
