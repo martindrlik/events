@@ -26,7 +26,7 @@ func configHandler(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(&config)
 	if err != nil {
 		log.Println(err)
-		http.Error(w, "something went wrong", http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	if config.DeleteRemote.Key != "" {
