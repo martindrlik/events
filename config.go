@@ -30,9 +30,9 @@ func configHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if config.DeleteRemote.Key != "" {
-		delete(stores, config.DeleteRemote.Key)
+		delete(remotes, config.DeleteRemote.Key)
 	}
 	if config.UpserRemote.Key != "" {
-		stores[config.UpserRemote.Key] = remote.Store{URL: config.UpserRemote.URL}
+		remotes[config.UpserRemote.Key] = remote.Store{URL: config.UpserRemote.URL}
 	}
 }

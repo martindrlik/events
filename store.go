@@ -33,11 +33,21 @@ func storeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	newID := atomic.AddInt64(&globalID, 1)
-	ch := make(chan error)
-	for _, s := range stores {
-		go func(s Storer) { ch <- s.Store(newID, p) }(s)
+	err = locals.Store(newID, p)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "local store failed", http.StatusInternalServerError)
+		return
 	}
-	for i := 0; i < len(stores); i++ {
+	go storeRemotely(newID, p)
+}
+
+func storeRemotely(id int64, p []byte) {
+	ch := make(chan error)
+	for _, s := range remotes {
+		go func(s Storer) { ch <- s.Store(id, p) }(s)
+	}
+	for i := 0; i < len(remotes); i++ {
 		if err := <-ch; err != nil {
 			log.Println(err)
 		}

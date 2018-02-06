@@ -18,7 +18,10 @@ type Storer interface {
 	Store(id int64, p []byte) error
 }
 
-var stores = map[string]Storer{}
+var (
+	locals  Storer
+	remotes = map[string]Storer{}
+)
 
 func main() {
 	flag.Parse()
@@ -28,7 +31,7 @@ func main() {
 	if *home == "" {
 		*home = "d"
 	}
-	stores[""] = local.Store{Home: *home}
+	locals = local.Store{Home: *home}
 	http.HandleFunc("/config", configHandler)
 	http.HandleFunc("/store", storeHandler)
 	log.Fatal(http.ListenAndServe(*addr, nil))
