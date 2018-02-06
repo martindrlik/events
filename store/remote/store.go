@@ -1,8 +1,8 @@
 package remote
 
 import (
+	"bytes"
 	"fmt"
-	"io"
 	"net/http"
 )
 
@@ -10,9 +10,10 @@ type Store struct {
 	URL string
 }
 
-func (s Store) Store(id int64, r io.Reader) error {
+func (s Store) Store(id int64, p []byte) error {
+	b := bytes.NewBuffer(p)
 	url := fmt.Sprintf("%s/%d", s.URL, id)
-	resp, err := http.DefaultClient.Post(url, "", r)
+	resp, err := http.DefaultClient.Post(url, "", b)
 	if err != nil {
 		return err
 	}

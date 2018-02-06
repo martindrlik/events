@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -15,9 +14,11 @@ var (
 	home = flag.String("home", "", "events home directory, $EVENTSPATH or d is default")
 )
 
-var stores = map[string]interface {
-	Store(id int64, r io.Reader) error
-}{}
+type Storer interface {
+	Store(id int64, p []byte) error
+}
+
+var stores = map[string]Storer{}
 
 func main() {
 	flag.Parse()

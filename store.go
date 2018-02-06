@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -35,23 +34,12 @@ func storeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	newID := atomic.AddInt64(&globalID, 1)
 	ch := make(chan error)
-	type storer interface {
-		Store(id int64, r io.Reader) error
+	for _, s := range stores {
+		go func(s Storer) { ch <- s.Store(newID, p) }(s)
 	}
-	for _, store := range stores {
-		go func(s storer, p []byte) {
-			b := bytes.NewBuffer(p)
-			ch <- s.Store(newID, b)
-		}(store, p)
-	}
-	hasError := false
 	for i := 0; i < len(stores); i++ {
 		if err := <-ch; err != nil {
 			log.Println(err)
-			hasError = true
 		}
-	}
-	if hasError {
-		http.Error(w, "something went wrong", http.StatusInternalServerError)
 	}
 }
