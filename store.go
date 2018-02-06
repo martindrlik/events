@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"sync/atomic"
 )
 
 var globalID int64
@@ -32,10 +33,10 @@ func storeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	globalID++
+	newID := atomic.AddInt64(&globalID, 1)
 	for _, store := range stores {
 		b := bytes.NewBuffer(p)
-		if err := store.Store(globalID, b); err != nil {
+		if err := store.Store(newID, b); err != nil {
 			log.Println(err)
 			http.Error(w, "something went wrong", http.StatusInternalServerError)
 			return
