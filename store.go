@@ -34,12 +34,24 @@ func storeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	newID := atomic.AddInt64(&globalID, 1)
+	ch := make(chan error)
+	type storer interface {
+		Store(id int64, r io.Reader) error
+	}
 	for _, store := range stores {
-		b := bytes.NewBuffer(p)
-		if err := store.Store(newID, b); err != nil {
+		go func(s storer, p []byte) {
+			b := bytes.NewBuffer(p)
+			ch <- s.Store(newID, b)
+		}(store, p)
+	}
+	hasError := false
+	for i := 0; i < len(stores); i++ {
+		if err := <-ch; err != nil {
 			log.Println(err)
-			http.Error(w, "something went wrong", http.StatusInternalServerError)
-			return
+			hasError = true
 		}
+	}
+	if hasError {
+		http.Error(w, "something went wrong", http.StatusInternalServerError)
 	}
 }
