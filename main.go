@@ -17,12 +17,12 @@ func init() {
 	flag.StringVar(&local.Path, "path", "", "path is events home directory, $EVENTSPATH or d is default")
 }
 
-type Storer interface {
+type storer interface {
 	Store(id int64, p []byte) error
 }
 
 var (
-	remotes = map[string]Storer{}
+	remotes = map[string]storer{}
 )
 
 func main() {

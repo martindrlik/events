@@ -47,7 +47,7 @@ func storeHandler(w http.ResponseWriter, r *http.Request) {
 func storeRemotely(id int64, p []byte) {
 	ch := make(chan error)
 	for _, s := range remotes {
-		go func(s Storer) { ch <- s.Store(id, p) }(s)
+		go func(s storer) { ch <- s.Store(id, p) }(s)
 	}
 	for i := 0; i < len(remotes); i++ {
 		if err := <-ch; err != nil {
