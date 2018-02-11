@@ -23,6 +23,6 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 	err = local.Zip(downloadRequest.IDs, w)
 	if err != nil {
 		log.Println(err)
-		http.Error(w, "download: something went wrong", http.StatusInternalServerError)
+		http.Error(w, "creating zip to download failed", http.StatusInternalServerError)
 	}
 }
