@@ -12,7 +12,7 @@ import (
 var Path string
 
 func Store(id int64, p []byte) error {
-	name := path.Join(Path, "events", fmt.Sprintf("%v", id))
+	name := FileName(id)
 	f, err := os.Create(name)
 	if err != nil {
 		return fmt.Errorf("store/local: create file failed: %v", err)

@@ -34,7 +34,9 @@ func main() {
 		local.Path = "d"
 	}
 	http.HandleFunc("/config", configHandler)
+	http.HandleFunc("/download", downloadHandler)
 	http.HandleFunc("/store", storeHandler)
 	http.HandleFunc("/ls", lsHandler)
+
 	log.Fatal(http.ListenAndServe(*addr, nil))
 }
